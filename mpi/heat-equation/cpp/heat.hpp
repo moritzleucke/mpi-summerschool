@@ -13,14 +13,19 @@ struct ParallelData {
 
       // TODO start: query number of MPI tasks and store it in
       // the size attribute of the class
+      MPI_Comm_size(MPI_COMM_WORLD, &size);
 
       // Query MPI rank of this task and store it in the rank attribute
+      MPI_Comm_rank(MPI_COMM_WORLD, &rank);
       // Determine also up and down neighbours of this domain and store
       // them in nup and ndown attributes, remember to cope with
       // boundary domains appropriatly
 
-      nup =
-      ndown =
+      nup = rank - 1;
+      ndown = rank + 1;
+
+      if (rank == 0) nup = MPI_PROC_NULL;
+      if (rank == size-1) ndown = MPI_PROC_NULL;
 
       // TODO end
 
@@ -60,6 +65,11 @@ void initialize(int argc, char *argv[], Field& current,
 void exchange(Field& field, const ParallelData parallel);
 
 void evolve(Field& curr, const Field& prev, const double a, const double dt);
+
+void init_communication(Field& field, const ParallelData parallel, MPI_Request* requ);
+void finalize_communication(MPI_Request* requests);
+void evolve_inner(Field& curr, const Field& prev, const double a, const double dt);
+void evolve_outer(Field& curr, const Field& prev, const double a, const double dt);
 
 void write_field(const Field& field, const int iter, const ParallelData parallel);
 

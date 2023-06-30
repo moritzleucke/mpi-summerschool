@@ -18,10 +18,14 @@ program exchange
   ! Send msgsize elements from the array "message", and receive into
   ! "receiveBuffer"
   if (myid == 0) then
+     call MPI_Send(message, arraysize, MPI_INT, 1, 123, MPI_COMM_WORLD)
+     call MPI_Recv(receiveBuffer, arraysize, MPI_INT, 1, 123, MPI_COMM_WORLD, status)
 
      write(*,'(A10,I3,A10,I3, A17, I3)') 'Rank: ', myid, &
           ' received ', nrecv, ' elements, first ', receiveBuffer(1)
   else if (myid == 1) then
+     call MPI_Recv(receiveBuffer, arraysize, MPI_INT, 0, 123, MPI_COMM_WORLD, status)
+     call MPI_Send(message, arraysize, MPI_INT, 0, 123, MPI_COMM_WORLD)
 
      write(*,'(A10,I3,A10,I3, A17, I3)') 'Rank: ', myid, &
           ' received ', nrecv, ' elements, first ', receiveBuffer(1)

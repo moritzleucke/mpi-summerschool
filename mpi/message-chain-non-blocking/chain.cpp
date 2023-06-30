@@ -10,7 +10,8 @@ int main(int argc, char *argv[])
     constexpr int size = 10000000;
     std::vector<int> message(size);
     std::vector<int> receiveBuffer(size);
-    MPI_Status status;
+    MPI_Status status[2];
+    MPI_Request request[2];
 
     double t0, t1;
 
@@ -44,13 +45,25 @@ int main(int argc, char *argv[])
     t0 = MPI_Wtime();
 
     // TODO: Send messages
-    // MPI_Send(message.data(), size, MPI_INT, destination, 123, MPI_COMM_WORLD);
-    MPI_Sendrecv(message.data(), size, MPI_INT, destination, 123, receiveBuffer.data(), size, MPI_INT, source, 123, MPI_COMM_WORLD, &status);
+    //      MPI_Isend(message.data(), size, MPI_INT, destination, 123, MPI_COMM_WORLD, &request[0]);
+    //      MPI_Irecv(receiveBuffer.data(), size, MPI_INT, source, 123, MPI_COMM_WORLD, &request[1]);
+    //      MPI_Waitall(1, request, status);
+    
+    MPI_Send_init(message.data(), size, MPI_INT, destination, 123, MPI_COMM_WORLD, &request[0]);
+    MPI_Recv_init(receiveBuffer.data(), size, MPI_INT, source, 123, MPI_COMM_WORLD, &request[1]);
+
+    MPI_Startall(2, request);
+
+    MPI_Waitall(2, request, status);
+
+    MPI_Request_free(&request[0]);
+    MPI_Request_free(&request[1]);
+
+
     printf("Sender: %d. Sent elements: %d. Tag: %d. Receiver: %d\n",
            myid, size, myid + 1, destination);
 
     // TODO: Receive messages
-    // MPI_Recv(receiveBuffer.data(), size, MPI_INT, source, 123, MPI_COMM_WORLD, &status);
 
     printf("Receiver: %d. first element %d.\n",
            myid, receiveBuffer[0]);

@@ -41,11 +41,41 @@ int main(int argc, char **argv)
     // Create datatype
     // TODO
 
-    // Send data from rank 0 to rank 1
-    // TODO
+    // MPI_Datatype row;
+    // MPI_Type_vector(8, 1, 8, MPI_INT, &row);
+    // MPI_Type_commit(&row);
+    // if (rank == 0){
+    //     MPI_Send(&array[0][1], 1, row, 1, 123, MPI_COMM_WORLD);
+    // } else {
+    //     MPI_Recv(&array[0][1], 1, row, 0, 123, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    // }
+    // MPI_Type_free(&row);
 
-    // Free datatype
-    // TODO
+    //      MPI_Datatype weird;
+    //      int blocklens[4] = {1, 2, 3, 4};
+    //      int displs[4] = {0, 17, 34, 51};
+    //      MPI_Type_indexed(4, blocklens, displs, MPI_INT, &weird);
+    //      MPI_Type_commit(&weird);
+    //      if (rank == 0){
+    //          MPI_Send(array, 1, weird, 1, 123, MPI_COMM_WORLD);
+    //      } else {
+    //          MPI_Recv(array, 1, weird, 0, 123, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    //      }   
+    //      MPI_Type_free(&weird);
+
+    MPI_Datatype muh;
+    int sizes[2] = {8, 8};
+    int subsizes[2] = {4, 4};
+    int offset[2] = {2, 2};
+    MPI_Type_create_subarray(2, sizes, subsizes, offset, MPI_ORDER_C, MPI_INT, &muh);
+    MPI_Type_commit(&muh);
+    if (rank == 0) {
+        MPI_Send(array, 1, muh, 1, 123, MPI_COMM_WORLD);
+    } else {
+        MPI_Recv(array, 1, muh, 0, 123, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    }
+    MPI_Type_free(&muh);
+
 
     // Print received data
     if (rank == 1) {

@@ -11,13 +11,14 @@ program datatype1
 
   call mpi_init(ierr)
   call mpi_comm_rank(MPI_COMM_WORLD, rank, ierr)
-
+  
   ! Initialize arrays
   array = 0
   if (rank == 0) then
      array = reshape([ ((i*10 + j, i=1,8), j=1,8) ], [8, 8] )
   end if
 
+  z = 2
   ! Print data on rank 0
   if (rank == 0) then
      write(*,*) 'Data on rank', rank

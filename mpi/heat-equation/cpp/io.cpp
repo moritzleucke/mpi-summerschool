@@ -83,14 +83,16 @@ void read_field(Field& field, std::string filename,
                 inner(i, j) = full(i, j);
 
         // Send data to others
-        for (int p=1; p < parallel.size; p++) {
-            MPI_Send(full.data(p * field.nx, 0), field.nx * field.ny,
-                     MPI_DOUBLE, p, 22, MPI_COMM_WORLD);
-        }
-    } else {
-        MPI_Recv(inner.data(), field.nx * field.ny,
-                 MPI_DOUBLE, 0, 22, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    }
+       //  for (int p=1; p < parallel.size; p++) {
+       //      MPI_Send(full.data(p * field.nx, 0), field.nx * field.ny,
+       //               MPI_DOUBLE, p, 22, MPI_COMM_WORLD);
+       //  }
+    } // else {
+      //  MPI_Recv(inner.data(), field.nx * field.ny,
+      //           MPI_DOUBLE, 0, 22, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    // }
+
+    MPI_Scatter(full.data(), field.nx * field.ny, MPI_DOUBLE, inner.data(), field.nx * field.ny, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     file.close();
 

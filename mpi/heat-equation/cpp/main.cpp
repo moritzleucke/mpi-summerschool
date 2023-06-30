@@ -11,6 +11,7 @@ int main(int argc, char **argv)
 {
 
   // TODO start: initialize MPI
+  MPI_Init(&argc, &argv);
 
   // TODO end
 
@@ -47,8 +48,14 @@ int main(int argc, char **argv)
 
     // Time evolve
     for (int iter = 1; iter <= nsteps; iter++) {
-        exchange(previous, parallelization);
-        evolve(current, previous, a, dt);
+        // exchange(previous, parallelization);
+        // evolve(current, previous, a, dt);
+        MPI_Request req[4];
+        init_communication(previous, parallelization, req);
+        evolve_inner(current, previous, a, dt);
+        finalize_communication(req);
+        evolve_outer(current, previous, a, dt);
+
         if (iter % image_interval == 0) {
             write_field(current, iter, parallelization);
         }
@@ -76,7 +83,7 @@ int main(int argc, char **argv)
     write_field(previous, nsteps, parallelization);
 
   // TODO start: finalize MPI
-
+  MPI_Finalize();
   // TODO end
 
     return 0;

@@ -26,10 +26,11 @@ int main(int argc, char *argv[])
         int dest = 1;
         int src = 1;
         int stag = 1;
-        int rtag = 2;
-        MPI_Send(message.data(), msgsize, MPI_INT, dest, stag, MPI_COMM_WORLD);
+        int rtag = 1;
         MPI_Recv(receiveBuffer.data(), arraysize, MPI_INT, src, rtag, MPI_COMM_WORLD,
                  &status);
+        MPI_Send(message.data(), msgsize, MPI_INT, dest, stag, MPI_COMM_WORLD);
+        
         MPI_Get_count(&status, MPI_INT, &nrecv);
         printf("Rank %i received %i elements, first %i\n", myid, nrecv, receiveBuffer[0]);
     } else if (myid == 1) {

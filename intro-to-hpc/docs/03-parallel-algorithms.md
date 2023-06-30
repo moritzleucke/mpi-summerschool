@@ -13,7 +13,8 @@ lang:   en
 
 <div class=column>
 Gauss-Seidel iteration:
-<small>
+
+
 ```
 while True
   for i:
@@ -21,14 +22,17 @@ while True
 
 until converged(u)
 ```
-</small>
+
+
 
 - cannot be parallelized due to data dependency
 
 </div>
+
 <div class=column>
 Jacobi iteration:
-<small>
+
+
 ```
 while True
   for i:
@@ -36,7 +40,8 @@ while True
   swap(u_new, u_old)
 until converged(u)
 ```
-</small>
+
+
 
 - can be parallelized
 
@@ -60,11 +65,13 @@ Local dependencies
 
 - Stencils: 
 
-<small>
+
+
 ```
 v[i,j] = u[i-1, j] + u[i+1, j] + u[i, j-1] ...
 ```
-</small>
+
+
 
 - Finite elements methods
 - Particle based methods with short range interactions
@@ -75,9 +82,9 @@ Global dependencies
 
 - Fourier transform 
 
-<small>
+
   $X_k = \sum_{n=0}^{N-1} x_n \exp(-i \frac{2\pi}{N}k \cdot n)$
-</small>
+
 
 - Linear algebra: $C = A \times B$
 
@@ -131,7 +138,7 @@ Moving particles
 - Sometimes it is possible to overlap communication and computation
    - Might require proper hardware support
 
-<small>
+
 <div class=column>
 ```
 for iter:
@@ -148,7 +155,7 @@ for iter:
    compute_second()
 ```
 </div>
-</small>
+
 
 # Communication to computation ratio
 
@@ -159,21 +166,21 @@ for iter:
 
 <div class=column>
 One dimensional decomposition
-<small>
+
 
 - Communication of boundary has constant cost $N$
 - Ratio: $\frac{T_{comm}}{T_{comp}} = \frac{p}{N}$
 
-</small>
+
 </div>
 <div class=column>
 Two dimensional decomposition
-<small>
+
 
 - Communication of boundary has cost $\frac{N}{\sqrt{p}}$
 - Ratio: $\frac{T_{comm}}{T_{comp}} = \frac{\sqrt{p}}{N}$
 
-</small>
+
 </div>
 
 # Reductions
@@ -220,10 +227,10 @@ $$\frac{\partial u}{\partial t} = \alpha \nabla^2 u$$
 
 - Discretize: Finite difference Laplacian in two dimensions
 
- <small>
+ 
  $$\nabla^2 u \rightarrow \frac{u(i-1,j)-2u(i,j)+u(i+1,j)}{(\Delta x)^2}
   + \frac{u(i,j-1)-2u(i,j)+u(i,j+1)}{(\Delta y)^2} $$
-</small>
+
 Temperature field $u(i,j)$
 
  ![](img/t_field.png){.center width=45%}

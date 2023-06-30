@@ -34,21 +34,47 @@ int main(int argc, char *argv[])
   }
 
   // Define datatype for the struct
-  // TODO
+  MPI_Datatype maeh;
+  int blocklengths[3] = {3, 1, 2};
+  int types[3] = {MPI_FLOAT, MPI_INT, MPI_CHAR};
+  
+  MPI_Aint disp[3];
+  MPI_Get_address(&particles[0].coords, &disp[0]);
+  MPI_Get_address(&particles[0].charge, &disp[1]);
+  MPI_Get_address(&particles[0].label, &disp[2]);
+  /* Make displacements relative */
+  disp[2] -= disp[0];
+  disp[1] -= disp[0];
+  disp[0] = 0;
+
+  MPI_Type_create_struct(3, blocklengths, disp, types, &maeh);
+  MPI_Type_commit(&maeh);
 
   // Check extent
-  // TODO
+  // TODO:
+  
+  MPI_Aint lb, extent;
+  MPI_Type_get_extent(maeh, &lb, &extent);
+  // if (sizeof(particles[0]) != extent) {
+    MPI_Datatype oldtype;
+    oldtype = maeh;
+    MPI_Type_create_resized(oldtype, 0, sizeof(particles[0]), &maeh);
+    MPI_Type_commit(&maeh);
+    MPI_Type_free(&oldtype);
+  // }
 
   // Communicate using the created particletype
   // Multiple sends are done for better timing
   t1 = MPI_Wtime();
   if (myid == 0) {
     for (i=0; i < reps; i++) {
-      // TODO: send
+      // send 
+      MPI_Send(particles, 1, maeh, 1, 123, MPI_COMM_WORLD);
     }
   } else if (myid == 1) {
     for (i=0; i < reps; i++) {
-      // TODO: receive
+      //  receive
+      MPI_Recv(particles, 1, maeh, 0, 123, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     }
   }
   t2 = MPI_Wtime();
@@ -59,7 +85,7 @@ int main(int argc, char *argv[])
           particles[n-1].coords[2]);
 
   // Free datatype
-  // TODO
+  MPI_Type_free(&maeh);
 
   MPI_Finalize();
   return 0;
